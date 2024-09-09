@@ -1,0 +1,34 @@
+#!/bin/sh
+
+PATH=/sbin:/usr/sbin:/bin:/usr/bin
+NAME="mosquitto_pub.sh"
+NAMESUB="mosquitto_sub.sh"
+test -x $DAEMON || exit 0
+
+case "$1" in
+  start)
+    echo "Starting $NAME, $NAMESUB"
+    /etc/mosquitto/mosquitto_pub.sh &
+    /etc/mosquitto/mosquitto_sub.sh &
+    echo "$NAME, $NAMESUB started."
+    ;;
+  stop)
+    echo "Stopping $NAME, $NAMESUB"    
+    pkill -f $NAME
+    pkill -f $NAMESUB
+    echo "$NAME, $NAMESUB stopped."
+    ;;
+  restart|force-reload)
+    echo "Restarting $NAME, $NAMESUB"
+    $0 stop
+    sleep 1
+    $0 start
+    echo "$NAME, $NAMESUB restarted."
+    ;;
+  *)
+    echo "Usage: /etc/init.d/$NAME, $NAMESUB {start|stop|restart|force-reload}"
+    exit 1
+    ;;
+esac
+
+exit 0
